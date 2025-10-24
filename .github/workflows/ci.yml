@@ -1,0 +1,16 @@
+name: Demo on self-hosted Docker runner
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  hello:
+    runs-on: [self-hosted, linux, x64, docker]  # must match labels on your runner
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Hello from $(uname -a)"
+      - name: Test Docker access
+        run: |
+          docker version
+          docker run --rm alpine sh -c "echo inside container && uname -a"

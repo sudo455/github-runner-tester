@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  gh-runner:
+    image: myoung34/github-runner:latest
+    restart: unless-stopped
+    environment:
+      REPO_URL: https://github.com/<owner>/<repo>
+      RUNNER_NAME_PREFIX: docker-runner-
+      RUNNER_LABELS: self-hosted,linux,x64,docker
+      RUNNER_GROUP: default
+      # Use EXACTLY one of these:
+      ACCESS_TOKEN: ${ACCESS_TOKEN}      # Option A: PAT (preferred for automation)
+      # RUNNER_TOKEN: ${RUNNER_TOKEN}    # Option B: 1-hour token (manual)
+      EPHEMERAL: "true"                  # Single-job runners = cleaner & safer
+      DISABLE_AUTO_UPDATE: "true"        # Update image on your schedule
+      RUNNER_WORKDIR: /_work
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ghrunner-data:/_work
+    # For Fedora/SELinux, you may need :Z on mounts, e.g. ...docker.sock:/var/run/docker.sock:Z
+
+volumes:
+  ghrunner-data:
