@@ -3,14 +3,25 @@ name: Demo on self-hosted Docker runner
 on:
   push:
     branches: [ "main" ]
+  workflow_dispatch:  # Add this to manually trigger for testing
 
 jobs:
   hello:
-    runs-on: [self-hosted, linux, x64, docker]  # must match labels on your runner
+    runs-on: [self-hosted, linux, x64, docker]
     steps:
-      - uses: actions/checkout@v4
-      - run: echo "Hello from $(uname -a)"
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Display system info
+        run: echo "Hello from $(uname -a)"
+      
       - name: Test Docker access
         run: |
+          echo "Testing Docker functionality..."
           docker version
-          docker run --rm alpine sh -c "echo inside container && uname -a"
+          docker run --rm alpine sh -c "echo '✅ Container executed successfully!' && uname -a"
+      
+      - name: Verify workspace
+        run: |
+          echo "Working directory: $(pwd)"
+          ls -la
